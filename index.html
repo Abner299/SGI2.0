@@ -57,7 +57,7 @@
         }
 
         #mensagem-erro {
-            color: #ff0000;
+            color: #ff0000; /* Cor vermelha para mensagens de erro */
             margin-top: 10px;
         }
     </style>
@@ -76,7 +76,6 @@
     <!-- Adicione o SDK mais recente do Firebase Authentication -->
     <script defer src="https://www.gstatic.com/firebasejs/10.6.0/firebase-app.js"></script>
     <script defer src="https://www.gstatic.com/firebasejs/10.6.0/firebase-auth.js"></script>
-    <script defer src="https://www.gstatic.com/firebasejs/10.6.0/firebase-firestore.js"></script>
 
     <script>
         // Configurações do seu projeto Firebase
@@ -93,9 +92,6 @@
         // Inicialize o Firebase
         firebase.initializeApp(firebaseConfig);
 
-        // Inicialize o Firestore
-        const firestore = firebase.firestore();
-
         // Função para lidar com o login
         function loginUser() {
             var usuario = document.getElementById('usuario').value;
@@ -104,38 +100,22 @@
             // Limpa mensagens de erro anteriores
             document.getElementById('mensagem-erro').innerText = "";
 
-            // Acesse o Firestore e obtenha os dados do usuário
-            const usuariosCollection = firestore.collection('usuarios');
+            // Autenticação com e-mail e senha
+            firebase.auth().signInWithEmailAndPassword(usuario, senha)
+                .then((userCredential) => {
+                    // Sucesso, usuário logado
+                    var user = userCredential.user;
+                    console.log('Usuário logado:', user);
 
-            usuariosCollection.where('usuario', '==', usuario).get()
-                .then((querySnapshot) => {
-                    if (!querySnapshot.empty) {
-                        const doc = querySnapshot.docs[0];
-                        const dadosUsuario = doc.data();
-                        const senhaArmazenada = dadosUsuario.senha;
-
-                        // Verifique a senha
-                        if (senha === senhaArmazenada) {
-                            // Sucesso, usuário logado
-                            console.log('Usuário logado:', usuario);
-
-                            // Redirecionar para outra página após o login
-                            window.location.href = "pagina_secreta.html";
-                        } else {
-                            // Senha incorreta
-                            document.getElementById('mensagem-erro').innerText = "Senha incorreta. Tente novamente.";
-                        }
-                    } else {
-                        // Usuário não encontrado
-                        document.getElementById('mensagem-erro').innerText = "Usuário não encontrado.";
-                    }
+                    // Redirecionar para outra página após o login
+                    window.location.href = "pagina_secreta.html";
                 })
                 .catch((error) => {
                     // Tratamento de erro
-                    console.error('Erro ao fazer login:', error.message);
+                    var errorMessage = error.message;
 
                     // Exibir mensagem de erro
-                    document.getElementById('mensagem-erro').innerText = "Ocorreu um erro. Tente novamente mais tarde.";
+                    document.getElementById('mensagem-erro').innerText = errorMessage;
                 });
 
             // Retorne false para evitar que o formulário seja enviado normalmente
