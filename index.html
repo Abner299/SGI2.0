@@ -73,13 +73,14 @@
 
     <script>
         // Configurações do seu projeto Firebase
-        var firebaseConfig = {
-            apiKey: "sua-api-key",
-            authDomain: "seu-projeto.firebaseapp.com",
-            projectId: "seu-projeto",
-            storageBucket: "seu-projeto.appspot.com",
-            messagingSenderId: "seu-id-de-mensagem",
-            appId: "sua-app-id"
+        const firebaseConfig = {
+            apiKey: "AIzaSyC4YyRCOR1aGkSIDFmv-F7DZrXrvSjPfCI",
+            authDomain: "sisp-1278.firebaseapp.com",
+            projectId: "sisp-1278",
+            storageBucket: "sisp-1278.appspot.com",
+            messagingSenderId: "1016999257507",
+            appId: "1:1016999257507:web:3061f1f7025fc07c03a616",
+            measurementId: "G-WZCG5N6FLE"
         };
 
         // Inicialize o Firebase
@@ -97,7 +98,8 @@
                     var user = userCredential.user;
                     console.log('Usuário logado:', user);
 
-                    // Adicione lógica de redirecionamento ou outras ações pós-login aqui
+                    // Redirecionar para outra página após o login
+                    window.location.href = "pagina_secreta.html";
                 })
                 .catch((error) => {
                     // Tratamento de erro
