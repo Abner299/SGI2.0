@@ -14,17 +14,17 @@
             height: 100vh;
             margin: 0;
             overflow: hidden;
-            background-image: url('images/1.jpeg');
+            background-image: url('images/imagem1.jpeg');
             background-size: cover;
             background-position: center;
-            animation: backgroundAnimation 10s infinite linear;
+            animation: backgroundAnimation 15s infinite linear;
         }
 
         @keyframes backgroundAnimation {
-            0%, 100% { background-image: url('images/1.jpeg'); }
-            25% { background-image: url('images/2.jpeg'); }
-            50% { background-image: url('images/3.jpeg'); }
-            75% { background-image: url('images/3.jpeg'); }
+            0%, 100% { background-image: url('images/imagem1.jpeg'); }
+            25% { background-image: url('images/imagem2.jpeg'); }
+            50% { background-image: url('images/imagem3.jpeg'); }
+            75% { background-image: url('images/imagem4.jpeg'); }
         }
 
         .login-container {
@@ -60,11 +60,56 @@
 <body>
     <div class="login-container">
         <h2>Login Policial</h2>
-        <form action="processa_login.php" method="post">
-            <input type="text" name="usuario" placeholder="Usuário" required>
-            <input type="password" name="senha" placeholder="Senha" required>
+        <form onsubmit="return loginUser()">
+            <input type="text" id="usuario" placeholder="Usuário" required>
+            <input type="password" id="senha" placeholder="Senha" required>
             <button type="submit">Entrar</button>
         </form>
     </div>
+
+    <!-- Adicione o SDK do Firebase Authentication -->
+    <script src="https://www.gstatic.com/firebasejs/9.2.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.2.0/firebase-auth.js"></script>
+
+    <script>
+        // Configurações do seu projeto Firebase
+        var firebaseConfig = {
+            apiKey: "sua-api-key",
+            authDomain: "seu-projeto.firebaseapp.com",
+            projectId: "seu-projeto",
+            storageBucket: "seu-projeto.appspot.com",
+            messagingSenderId: "seu-id-de-mensagem",
+            appId: "sua-app-id"
+        };
+
+        // Inicialize o Firebase
+        firebase.initializeApp(firebaseConfig);
+
+        // Função para lidar com o login
+        function loginUser() {
+            var usuario = document.getElementById('usuario').value;
+            var senha = document.getElementById('senha').value;
+
+            // Autenticação com e-mail e senha
+            firebase.auth().signInWithEmailAndPassword(usuario, senha)
+                .then((userCredential) => {
+                    // Sucesso, usuário logado
+                    var user = userCredential.user;
+                    console.log('Usuário logado:', user);
+
+                    // Adicione lógica de redirecionamento ou outras ações pós-login aqui
+                })
+                .catch((error) => {
+                    // Tratamento de erro
+                    var errorCode = error.code;
+                    var errorMessage = error.message;
+                    console.error('Erro ao fazer login:', errorMessage);
+                    // Exibir mensagem de erro ou realizar ações de tratamento de erro
+                });
+
+            // Retorne false para evitar que o formulário seja enviado normalmente
+            return false;
+        }
+    </script>
 </body>
 </html>
