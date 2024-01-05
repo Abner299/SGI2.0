@@ -76,6 +76,7 @@
     <!-- Adicione o SDK mais recente do Firebase Authentication -->
     <script defer src="https://www.gstatic.com/firebasejs/10.6.0/firebase-app.js"></script>
     <script defer src="https://www.gstatic.com/firebasejs/10.6.0/firebase-auth.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/10.6.0/firebase-firestore.js"></script>
 
     <script>
         // Configurações do seu projeto Firebase
@@ -92,31 +93,49 @@
         // Inicialize o Firebase
         firebase.initializeApp(firebaseConfig);
 
+        // Inicialize o Firestore
+        const firestore = firebase.firestore();
+
         // Função para lidar com o login
         function loginUser() {
-            var usuario = document.getElementById('001').value;
-            var senha = document.getElementById('001').value;
+            var usuario = document.getElementById('usuario').value;
+            var senha = document.getElementById('senha').value;
 
             // Limpa mensagens de erro anteriores
             document.getElementById('mensagem-erro').innerText = "";
 
-            // Autenticação com e-mail e senha
-            firebase.auth().signInWithEmailAndPassword(usuario, senha)
-                .then((userCredential) => {
-                    // Sucesso, usuário logado
-                    var user = userCredential.user;
-                    console.log('Usuário logado:', user);
+            // Acesse o Firestore e obtenha os dados do usuário
+            const usuariosCollection = firestore.collection('usuarios');
 
-                    // Redirecionar para outra página após o login
-                    window.location.href = "pagina_secreta.html";
+            usuariosCollection.where('usuario', '==', usuario).get()
+                .then((querySnapshot) => {
+                    if (!querySnapshot.empty) {
+                        const doc = querySnapshot.docs[0];
+                        const dadosUsuario = doc.data();
+                        const senhaArmazenada = dadosUsuario.senha;
+
+                        // Verifique a senha
+                        if (senha === senhaArmazenada) {
+                            // Sucesso, usuário logado
+                            console.log('Usuário logado:', usuario);
+
+                            // Redirecionar para outra página após o login
+                            window.location.href = "pagina_secreta.html";
+                        } else {
+                            // Senha incorreta
+                            document.getElementById('mensagem-erro').innerText = "Senha incorreta. Tente novamente.";
+                        }
+                    } else {
+                        // Usuário não encontrado
+                        document.getElementById('mensagem-erro').innerText = "Usuário não encontrado.";
+                    }
                 })
                 .catch((error) => {
                     // Tratamento de erro
-                    var errorMessage = error.message;
-                    console.error('Erro ao fazer login:', errorMessage);
+                    console.error('Erro ao fazer login:', error.message);
 
                     // Exibir mensagem de erro
-                    document.getElementById('mensagem-erro').innerText = "Senha incorreta. Tente novamente.";
+                    document.getElementById('mensagem-erro').innerText = "Ocorreu um erro. Tente novamente mais tarde.";
                 });
 
             // Retorne false para evitar que o formulário seja enviado normalmente
